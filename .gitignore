@@ -28,13 +28,53 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# ASP.NET Scaffolding
-ScaffoldingReadMe.txt
-
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
 *.snupkg
+
+# NuGet Cache and Generated Files
+**/project.nuget.cache
+**/*.nuget.dgspec.json
+**/*.nuget.g.props
+**/*.nuget.g.targets
+**/project.assets.json
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Visual Studio files
+.vs/
+*.user
+*.userosettings
+*.suo
+*.userprefs
+*.sln.docstates
+*.user
+*.csproj.user
+*.vbproj.user
+*.fsproj.user
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Local configuration files (IDE-specific)
+**/Properties/launchSettings.json
+
+# Local appsettings (keep appsettings.json and appsettings.Development.json)
+**/appsettings.Local.json
+**/appsettings.*.local.json
+
+# HTTP test files
+*.http
 
 # Others
 ~$*
@@ -52,3 +92,45 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Code Coverage
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+**/TestResults/
+**/coverage/
+
+# Docker
+.dockerignore
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
