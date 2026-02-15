@@ -50,6 +50,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Cache SonarQube Cloud packages
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: actions/cache@v4
         with:
           path: ~/sonar/cache
@@ -57,6 +58,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache SonarQube Cloud scanner
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
@@ -65,7 +67,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube Cloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        if: ${{ secrets.SONAR_TOKEN != '' && steps.cache-sonar-scanner.outputs.cache-hit != 'true' }}
         run: |
           mkdir -p ${{ runner.temp }}/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}/scanner
@@ -118,15 +120,30 @@ jobs:
             --logger "trx;LogFileName=integration-tests.trx"
 
       - name: Build and analyze with SonarQube
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "⚠️ SonarQube token not configured, skipping analysis"
+            exit 0
+          fi
+          
+          echo "🔍 Starting SonarQube analysis..."
           ${{ runner.temp }}/scanner/dotnet-sonarscanner begin \
             /k:"fiap-soat11_video_api" \
             /o:"fiap-soat11" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.cs.opencover.reportsPaths="${{ runner.temp }}/TestResults/**/coverage.cobertura.xml" \
             /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/Startup.cs,**/obj/**,**/bin/**"
+          
+          echo "🔨 Building solution for SonarQube analysis..."
           dotnet build VideoUploadService.sln --configuration Release --no-restore
-          ${{ runner.temp }}/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          
+          echo "📊 Finalizing SonarQube analysis..."
+          ${{ runner.temp }}/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+          echo "✅ SonarQube analysis completed"
 
   continuous-delivery:
     runs-on: ubuntu-latest
