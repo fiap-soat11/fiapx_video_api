@@ -2,6 +2,7 @@ using Application.UseCases.GetProcessedVideo;
 using Application.UseCases.GetVideoStatus;
 using Application.UseCases.UploadVideo;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 
@@ -10,6 +11,7 @@ namespace WebApi.Controllers.v1;
 [ApiVersion("1.0")]
 [Route("v{version:apiVersion}/videos")]
 [ApiController]
+[Authorize]
 public class VideoController : ApiControllerBase
 {
     public VideoController(IMediator mediator) : base(mediator)
