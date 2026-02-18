@@ -4,7 +4,7 @@ using WebApi.Models;
 
 namespace WebApi.Controllers;
 
-[Route("health")]
+[Route("api/health")]
 [ApiController]
 public class HealthCheckController(MediatR.IMediator mediator) : ApiControllerBase(mediator)
 {
