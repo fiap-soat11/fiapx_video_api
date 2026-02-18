@@ -4,13 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers;
 
 [ApiController]
-public abstract class ApiControllerBase : ControllerBase
+public abstract class ApiControllerBase(IMediator mediator) : ControllerBase
 {
-    protected readonly IMediator Mediator;
-
-    protected ApiControllerBase(IMediator mediator)
-    {
-        Mediator = mediator;
-    }
+    protected readonly IMediator Mediator = mediator;
 }
 

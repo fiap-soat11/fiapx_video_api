@@ -8,20 +8,16 @@ using System.Text;
 
 namespace Infrastructure.Messaging;
 
-public class SqsService : Application.Interfaces.ISqsService
+public class SqsService(IOptions<SqsSettings> settings) : Application.Interfaces.ISqsService
 {
-    private readonly SqsSettings _settings;
-    private readonly IAmazonSQS _sqsClient;
-
-    public SqsService(IOptions<SqsSettings> settings)
-    {
-        _settings = settings.Value;
-        var config = new AmazonSQSConfig
+    private readonly SqsSettings _settings = settings.Value;
+    private readonly IAmazonSQS _sqsClient = new AmazonSQSClient(
+        settings.Value.AccessKey, 
+        settings.Value.SecretKey, 
+        new AmazonSQSConfig
         {
-            RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(_settings.Region)
-        };
-        _sqsClient = new AmazonSQSClient(_settings.AccessKey, _settings.SecretKey, config);
-    }
+            RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(settings.Value.Region)
+        });
 
     public async Task PublishVideoProcessingMessageAsync(Application.Interfaces.VideoProcessingMessage message, CancellationToken cancellationToken = default)
     {

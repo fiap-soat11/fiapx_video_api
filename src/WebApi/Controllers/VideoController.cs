@@ -6,18 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 
-namespace WebApi.Controllers.v1;
+namespace WebApi.Controllers;
 
-[ApiVersion("1.0")]
-[Route("v{version:apiVersion}/videos")]
+[Route("videos")]
 [ApiController]
 [Authorize]
-public class VideoController : ApiControllerBase
+public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
 {
-    public VideoController(IMediator mediator) : base(mediator)
-    {
-    }
-
     [HttpPost]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(UploadVideoResponse), StatusCodes.Status201Created)]
@@ -34,7 +29,7 @@ public class VideoController : ApiControllerBase
             request.VideoFile.ContentType ?? "video/mp4",
             request.VideoFile.Length);
         var result = await Mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetVideoStatus), new { id = result.VideoId, version = "1.0" }, result);
+        return CreatedAtAction(nameof(GetVideoStatus), new { id = result.VideoId }, result);
     }
 
     [HttpGet("{id:guid}/download")]
