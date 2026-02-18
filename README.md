@@ -6,7 +6,7 @@ Microsserviço responsável pela interação com usuário para upload e download
 - **Clean Architecture** com separação de responsabilidades
 - Padrão **CQRS** usando MediatR
 - Princípios de **Domain-Driven Design**
-- **API RESTful** com versionamento
+- **API RESTful**
 - **AWS S3** para armazenamento de arquivos
 - **AWS SQS** para filas de mensagens
 - **MySQL** para persistência de dados
@@ -112,18 +112,24 @@ hoje está default, configurada, mas pode ser alterada.
 ## Endpoints da API
 
 ### Upload de Vídeo
-- **POST** `/v1/videos`
+- **POST** `/videos`
 - **Content-Type:** `multipart/form-data`
 - **Body:** `videoFile` (arquivo)
+- **Authorization:** Bearer Token (JWT)
 
 ### Obter Status do Vídeo
-- **GET** `/v1/videos/{id}`
+- **GET** `/videos/{id}`
+- **Authorization:** Bearer Token (JWT)
 
 ### Download do Vídeo Processado
-- **GET** `/v1/videos/{id}/download`
+- **GET** `/videos/{id}/download`
+- **Authorization:** Bearer Token (JWT)
 
 ### Health Check
-- **GET** `/v1/health`
+- **GET** `/health` (público, sem autenticação)
+
+### Teste de Autenticação
+- **GET** `/health/auth-test` (protegido, requer autenticação)
 
 ## Estrutura do Projeto
 

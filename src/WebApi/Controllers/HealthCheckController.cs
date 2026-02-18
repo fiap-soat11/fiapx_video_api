@@ -1,18 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using WebApi.Models;
 
-namespace WebApi.Controllers.v1;
+namespace WebApi.Controllers;
 
-[ApiVersion("1.0")]
-[Route("v{version:apiVersion}/health")]
+[Route("health")]
 [ApiController]
-public class HealthCheckController : ApiControllerBase
+public class HealthCheckController(MediatR.IMediator mediator) : ApiControllerBase(mediator)
 {
-    public HealthCheckController(MediatR.IMediator mediator) : base(mediator)
-    {
-    }
-
     [HttpGet]
     [ProducesResponseType(typeof(HealthCheckResponse), StatusCodes.Status200OK)]
     public ActionResult<HealthCheckResponse> Get()
@@ -40,18 +35,3 @@ public class HealthCheckController : ApiControllerBase
         });
     }
 }
-
-public record HealthCheckResponse
-{
-    public string Status { get; init; } = string.Empty;
-    public DateTime Timestamp { get; init; }
-}
-
-public record AuthTestResponse
-{
-    public bool IsAuthenticated { get; init; }
-    public string UserName { get; init; } = string.Empty;
-    public string Message { get; init; } = string.Empty;
-    public object? Claims { get; init; }
-}
-

@@ -34,7 +34,12 @@ public class VideoControllerTests
         fileContent.Headers.ContentType = new MediaTypeHeaderValue("video/mp4");
         content.Add(fileContent, "videoFile", "test-video.mp4");
 
-        var response = await _client.PostAsync("/v1/videos", content);
+        // Add JWT token for authentication
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6WyJhZG1pbkB0ZXN0ZS5jb20iLCJhZG1pbkB0ZXN0ZS5jb20iXSwidW5pcXVlX25hbWUiOiJhZG1pbkB0ZXN0ZS5jb20iLCJzdWIiOiJhZG1pbkB0ZXN0ZS5jb20iLCJqdGkiOiI0ZTU5OWM5YS0wMTg0LTQ0ZjYtYmMzZC0zYjFjMTYxMDRkYjEiLCJpYXQiOjE3NzExNzA3NjAsIm5iZiI6MTc3MTE3MDc2MCwiZXhwIjoxNzcxMTc0MzYwLCJpc3MiOiJmaWFweF91c3VhcmlvX3NlcnZpY2UiLCJhdWQiOiJmaWFweF91c3VhcmlvX2NsaWVudCJ9.6ZMM8nrv0y25DZpHpXjGUyVTI9K0KL9tKp0F8chn3mI");
+
+        var response = await _client.PostAsync("/videos", content);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
@@ -47,7 +52,12 @@ public class VideoControllerTests
         fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
         content.Add(fileContent, "videoFile", "test.pdf");
 
-        var response = await _client.PostAsync("/v1/videos", content);
+        // Add JWT token for authentication
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6WyJhZG1pbkB0ZXN0ZS5jb20iLCJhZG1pbkB0ZXN0ZS5jb20iXSwidW5pcXVlX25hbWUiOiJhZG1pbkB0ZXN0ZS5jb20iLCJzdWIiOiJhZG1pbkB0ZXN0ZS5jb20iLCJqdGkiOiI0ZTU5OWM5YS0wMTg0LTQ0ZjYtYmMzZC0zYjFjMTYxMDRkYjEiLCJpYXQiOjE3NzExNzA3NjAsIm5iZiI6MTc3MTE3MDc2MCwiZXhwIjoxNzcxMTc0MzYwLCJpc3MiOiJmaWFweF91c3VhcmlvX3NlcnZpY2UiLCJhdWQiOiJmaWFweF91c3VhcmlvX2NsaWVudCJ9.6ZMM8nrv0y25DZpHpXjGUyVTI9K0KL9tKp0F8chn3mI");
+
+        var response = await _client.PostAsync("/videos", content);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -57,7 +67,12 @@ public class VideoControllerTests
     {
         var nonExistentId = Guid.NewGuid();
 
-        var response = await _client.GetAsync($"/v1/videos/{nonExistentId}");
+        // Add JWT token for authentication
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6WyJhZG1pbkB0ZXN0ZS5jb20iLCJhZG1pbkB0ZXN0ZS5jb20iXSwidW5pcXVlX25hbWUiOiJhZG1pbkB0ZXN0ZS5jb20iLCJzdWIiOiJhZG1pbkB0ZXN0ZS5jb20iLCJqdGkiOiI0ZTU5OWM5YS0wMTg0LTQ0ZjYtYmMzZC0zYjFjMTYxMDRkYjEiLCJpYXQiOjE3NzExNzA3NjAsIm5iZiI6MTc3MTE3MDc2MCwiZXhwIjoxNzcxMTc0MzYwLCJpc3MiOiJmaWFweF91c3VhcmlvX3NlcnZpY2UiLCJhdWQiOiJmaWFweF91c3VhcmlvX2NsaWVudCJ9.6ZMM8nrv0y25DZpHpXjGUyVTI9K0KL9tKp0F8chn3mI");
+
+        var response = await _client.GetAsync($"/videos/{nonExistentId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }

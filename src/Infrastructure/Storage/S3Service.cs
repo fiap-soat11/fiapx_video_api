@@ -4,20 +4,16 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Storage;
 
-public class S3Service : Application.Interfaces.IS3Service
+public class S3Service(IOptions<Application.Interfaces.S3Settings> settings) : Application.Interfaces.IS3Service
 {
-    private readonly Application.Interfaces.S3Settings _settings;
-    private readonly IAmazonS3 _s3Client;
-
-    public S3Service(IOptions<Application.Interfaces.S3Settings> settings)
-    {
-        _settings = settings.Value;
-        var config = new AmazonS3Config
+    private readonly Application.Interfaces.S3Settings _settings = settings.Value;
+    private readonly IAmazonS3 _s3Client = new AmazonS3Client(
+        settings.Value.AccessKey, 
+        settings.Value.SecretKey, 
+        new AmazonS3Config
         {
-            RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(_settings.Region)
-        };
-        _s3Client = new AmazonS3Client(_settings.AccessKey, _settings.SecretKey, config);
-    }
+            RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(settings.Value.Region)
+        });
 
     public async Task<string> UploadVideoAsync(Stream fileStream, string fileName, string contentType, string key, CancellationToken cancellationToken = default)
     {

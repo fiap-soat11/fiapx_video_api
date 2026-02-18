@@ -3,18 +3,11 @@ using MediatR;
 
 namespace Application.UseCases.GetVideoStatus;
 
-public sealed class GetVideoStatusQueryHandler : IRequestHandler<GetVideoStatusQuery, GetVideoStatusResponse>
+public sealed class GetVideoStatusQueryHandler(IVideoRepository videoRepository) : IRequestHandler<GetVideoStatusQuery, GetVideoStatusResponse>
 {
-    private readonly IVideoRepository _videoRepository;
-
-    public GetVideoStatusQueryHandler(IVideoRepository videoRepository)
-    {
-        _videoRepository = videoRepository;
-    }
-
     public async Task<GetVideoStatusResponse> Handle(GetVideoStatusQuery request, CancellationToken cancellationToken)
     {
-        var video = await _videoRepository.GetByIdAsync(request.VideoId, cancellationToken);
+        var video = await videoRepository.GetByIdAsync(request.VideoId, cancellationToken);
 
         if (video == null)
         {

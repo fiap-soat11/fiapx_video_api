@@ -4,22 +4,13 @@ using MediatR;
 
 namespace Application.UseCases.GetProcessedVideo;
 
-public sealed class GetProcessedVideoQueryHandler : IRequestHandler<GetProcessedVideoQuery, GetProcessedVideoResponse>
+public sealed class GetProcessedVideoQueryHandler(
+    IVideoRepository videoRepository,
+    Application.Interfaces.IS3Service s3Service) : IRequestHandler<GetProcessedVideoQuery, GetProcessedVideoResponse>
 {
-    private readonly IVideoRepository _videoRepository;
-    private readonly Application.Interfaces.IS3Service _s3Service;
-
-    public GetProcessedVideoQueryHandler(
-        IVideoRepository videoRepository,
-        Application.Interfaces.IS3Service s3Service)
-    {
-        _videoRepository = videoRepository;
-        _s3Service = s3Service;
-    }
-
     public async Task<GetProcessedVideoResponse> Handle(GetProcessedVideoQuery request, CancellationToken cancellationToken)
     {
-        var video = await _videoRepository.GetByIdAsync(request.VideoId, cancellationToken);
+        var video = await videoRepository.GetByIdAsync(request.VideoId, cancellationToken);
 
         if (video == null)
         {
@@ -31,7 +22,7 @@ public sealed class GetProcessedVideoQueryHandler : IRequestHandler<GetProcessed
 
         if (video.Status == Domain.Entities.VideoStatus.Processed && !string.IsNullOrEmpty(video.S3ZipKey))
         {
-            downloadUrl = await _s3Service.GeneratePresignedUrlAsync(video.S3ZipKey, 15, cancellationToken);
+            downloadUrl = await s3Service.GeneratePresignedUrlAsync(video.S3ZipKey, 15, cancellationToken);
             expiresAt = DateTime.UtcNow.AddMinutes(15);
         }
 
