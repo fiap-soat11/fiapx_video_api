@@ -126,10 +126,10 @@ hoje está default, configurada, mas pode ser alterada.
 - **Authorization:** Bearer Token (JWT)
 
 ### Health Check
-- **GET** `/health` (público, sem autenticação)
+- **GET** `/api/health` (público, sem autenticação)
 
 ### Teste de Autenticação
-- **GET** `/health/auth-test` (protegido, requer autenticação)
+- **GET** `/api/health/auth-test` (protegido, requer autenticação)
 
 ## Estrutura do Projeto
 
