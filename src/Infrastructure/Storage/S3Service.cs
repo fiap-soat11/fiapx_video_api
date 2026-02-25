@@ -9,7 +9,8 @@ public class S3Service(IOptions<Application.Interfaces.S3Settings> settings) : A
     private readonly Application.Interfaces.S3Settings _settings = settings.Value;
     private readonly IAmazonS3 _s3Client = new AmazonS3Client(
         settings.Value.AccessKey, 
-        settings.Value.SecretKey, 
+        settings.Value.SecretKey,
+        settings.Value.Session_Token,
         new AmazonS3Config
         {
             RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(settings.Value.Region)
@@ -41,5 +42,17 @@ public class S3Service(IOptions<Application.Interfaces.S3Settings> settings) : A
         };
 
         return await Task.FromResult(_s3Client.GetPreSignedURL(request));
+    }
+
+    public async Task<(Stream Stream, string ContentType)> GetObjectStreamAsync(string key, CancellationToken cancellationToken = default)
+    {
+        var request = new GetObjectRequest
+        {
+            BucketName = _settings.BucketName,
+            Key = key
+        };
+        var response = await _s3Client.GetObjectAsync(request, cancellationToken);
+        var contentType = response.Headers.ContentType ?? "application/octet-stream";
+        return (response.ResponseStream, contentType);
     }
 }

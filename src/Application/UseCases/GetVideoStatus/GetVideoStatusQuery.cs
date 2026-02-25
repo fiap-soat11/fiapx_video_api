@@ -2,5 +2,5 @@ using MediatR;
 
 namespace Application.UseCases.GetVideoStatus;
 
-public sealed record GetVideoStatusQuery(Guid VideoId) : IRequest<GetVideoStatusResponse>;
+public sealed record GetVideoStatusQuery(int Id) : IRequest<GetVideoStatusResponse>;
 

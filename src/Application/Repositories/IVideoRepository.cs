@@ -4,8 +4,8 @@ namespace Application.Repositories;
 
 public interface IVideoRepository
 {
-    Task<Video?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Video> AddAsync(Video video, CancellationToken cancellationToken = default);
-    Task UpdateAsync(Video video, CancellationToken cancellationToken = default);
+    Task<VideoProcessing?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<VideoProcessing> AddAsync(VideoProcessing videoProcessing, CancellationToken cancellationToken = default);
+    Task UpdateAsync(VideoProcessing videoProcessing, CancellationToken cancellationToken = default);
 }
 

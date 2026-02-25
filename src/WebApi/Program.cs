@@ -109,6 +109,7 @@ if (!string.IsNullOrEmpty(connectionString))
 }
 
 builder.Services.AddScoped<IVideoRepository, VideoRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.Configure<Application.Interfaces.S3Settings>(builder.Configuration.GetSection("AWS:S3"));
 builder.Services.AddSingleton<Application.Interfaces.IS3Service, Infrastructure.Storage.S3Service>();
