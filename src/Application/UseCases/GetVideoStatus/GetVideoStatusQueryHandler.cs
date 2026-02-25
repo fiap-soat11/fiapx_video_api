@@ -7,20 +7,19 @@ public sealed class GetVideoStatusQueryHandler(IVideoRepository videoRepository)
 {
     public async Task<GetVideoStatusResponse> Handle(GetVideoStatusQuery request, CancellationToken cancellationToken)
     {
-        var video = await videoRepository.GetByIdAsync(request.VideoId, cancellationToken);
+        var video = await videoRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (video == null)
         {
-            throw new KeyNotFoundException($"Video with id {request.VideoId} not found.");
+            throw new KeyNotFoundException($"Video with id {request.Id} not found.");
         }
 
         return new GetVideoStatusResponse
         {
-            VideoId = video.Id,
+            Id = video.Id,
             Status = video.Status,
             CreatedAt = video.CreatedAt,
-            UpdatedAt = video.UpdatedAt
+            CompletedAt = video.CompletedAt
         };
     }
 }
-

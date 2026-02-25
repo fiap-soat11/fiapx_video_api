@@ -10,7 +10,7 @@ namespace WebApi.Controllers;
 
 [Route("videos")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
 {
     [HttpPost]
@@ -24,33 +24,39 @@ public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
         CancellationToken cancellationToken)
     {
         var command = new UploadVideoCommand(
+            request.UserId,
             request.VideoFile.OpenReadStream(),
             request.VideoFile.FileName,
             request.VideoFile.ContentType ?? "video/mp4",
             request.VideoFile.Length);
         var result = await Mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetVideoStatus), new { id = result.VideoId }, result);
+        return CreatedAtAction(nameof(GetVideoStatus), new { id = result.Id }, result);
     }
 
-    [HttpGet("{id:guid}/download")]
+    [HttpGet("{id:int}/download")]
+    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(GetProcessedVideoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GetProcessedVideoResponse>> GetProcessedVideo(
-        [FromRoute] Guid id,
+    public async Task<ActionResult> GetProcessedVideo(
+        [FromRoute] int id,
         CancellationToken cancellationToken)
     {
         var query = new GetProcessedVideoQuery(id);
         var result = await Mediator.Send(query, cancellationToken);
+
+        if (result.FileStream != null)
+            return File(result.FileStream, result.ContentType ?? "application/octet-stream", result.FileName ?? "download.zip");
+
         return Ok(result);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(GetVideoStatusResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<GetVideoStatusResponse>> GetVideoStatus(
-        [FromRoute] Guid id,
+        [FromRoute] int id,
         CancellationToken cancellationToken)
     {
         var query = new GetVideoStatusQuery(id);

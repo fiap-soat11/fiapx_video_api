@@ -7,22 +7,22 @@ namespace Infrastructure.Persistence.Repositories;
 
 public class VideoRepository(ApplicationDbContext context) : IVideoRepository
 {
-    public async Task<Video?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<VideoProcessing?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await context.Videos
+        return await context.VideoProcessings
             .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
     }
 
-    public async Task<Video> AddAsync(Video video, CancellationToken cancellationToken = default)
+    public async Task<VideoProcessing> AddAsync(VideoProcessing videoProcessing, CancellationToken cancellationToken = default)
     {
-        await context.Videos.AddAsync(video, cancellationToken);
+        await context.VideoProcessings.AddAsync(videoProcessing, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
-        return video;
+        return videoProcessing;
     }
 
-    public async Task UpdateAsync(Video video, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(VideoProcessing videoProcessing, CancellationToken cancellationToken = default)
     {
-        context.Videos.Update(video);
+        context.VideoProcessings.Update(videoProcessing);
         await context.SaveChangesAsync(cancellationToken);
     }
 }

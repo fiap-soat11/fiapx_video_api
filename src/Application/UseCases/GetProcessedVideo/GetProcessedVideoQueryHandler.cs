@@ -10,29 +10,40 @@ public sealed class GetProcessedVideoQueryHandler(
 {
     public async Task<GetProcessedVideoResponse> Handle(GetProcessedVideoQuery request, CancellationToken cancellationToken)
     {
-        var video = await videoRepository.GetByIdAsync(request.VideoId, cancellationToken);
+        var video = await videoRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (video == null)
         {
-            throw new KeyNotFoundException($"Video with id {request.VideoId} not found.");
+            throw new KeyNotFoundException($"Video with id {request.Id} not found.");
         }
 
         string? downloadUrl = null;
         DateTime? expiresAt = null;
+        Stream? fileStream = null;
+        string? fileName = null;
+        string? contentType = null;
 
-        if (video.Status == Domain.Entities.VideoStatus.Processed && !string.IsNullOrEmpty(video.S3ZipKey))
+        if (video.Status == "Completed" && !string.IsNullOrEmpty(video.S3OutputPath))
         {
-            downloadUrl = await s3Service.GeneratePresignedUrlAsync(video.S3ZipKey, 15, cancellationToken);
+            var (stream, contentTypeFromS3) = await s3Service.GetObjectStreamAsync(video.S3OutputPath, cancellationToken);
+            fileStream = stream;
+            contentType = contentTypeFromS3;
+            fileName = Path.ChangeExtension(video.OriginalFileName, ".zip") ?? "processed.zip";
+            downloadUrl = await s3Service.GeneratePresignedUrlAsync(video.S3OutputPath, 15, cancellationToken);
             expiresAt = DateTime.UtcNow.AddMinutes(15);
         }
 
         return new GetProcessedVideoResponse
         {
-            VideoId = video.Id,
+            Id = video.Id,
             Status = video.Status,
             DownloadUrl = downloadUrl,
-            ExpiresAt = expiresAt
+            ExpiresAt = expiresAt,
+            FileStream = fileStream,
+            FileName = fileName,
+            ContentType = contentType
         };
     }
+
 }
 

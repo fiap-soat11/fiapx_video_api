@@ -1,12 +1,9 @@
-using Domain.Entities;
-
 namespace Application.UseCases.GetVideoStatus;
 
 public record GetVideoStatusResponse
 {
-    public Guid VideoId { get; init; }
-    public VideoStatus Status { get; init; }
+    public int Id { get; init; }
+    public string Status { get; init; } = string.Empty;
     public DateTime CreatedAt { get; init; }
-    public DateTime UpdatedAt { get; init; }
+    public DateTime? CompletedAt { get; init; }
 }
-

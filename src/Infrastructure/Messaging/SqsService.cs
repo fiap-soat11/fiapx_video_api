@@ -13,7 +13,8 @@ public class SqsService(IOptions<SqsSettings> settings) : Application.Interfaces
     private readonly SqsSettings _settings = settings.Value;
     private readonly IAmazonSQS _sqsClient = new AmazonSQSClient(
         settings.Value.AccessKey, 
-        settings.Value.SecretKey, 
+        settings.Value.SecretKey,
+        settings.Value.Session_Token,
         new AmazonSQSConfig
         {
             RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(settings.Value.Region)
