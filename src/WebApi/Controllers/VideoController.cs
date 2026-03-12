@@ -10,7 +10,7 @@ namespace WebApi.Controllers;
 
 [Route("videos")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
 {
     [HttpPost]
@@ -19,12 +19,15 @@ public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [RequestFormLimits(MultipartBodyLengthLimit = 104857600)]
     [DisableRequestSizeLimit]
-    public async Task<ActionResult<UploadVideoResponse>> UploadVideo(
-        [FromForm] UploadVideoRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<UploadVideoResponse>> UploadVideo([FromForm] UploadVideoRequest request, CancellationToken cancellationToken)
     {
+        var userIdClaim = User.FindFirst("user_id")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return Unauthorized("JWT must contain a valid 'user_id' (or 'sub') claim with the user id (int).");
+
         var command = new UploadVideoCommand(
-            request.UserId,
+            userId,
             request.VideoFile.OpenReadStream(),
             request.VideoFile.FileName,
             request.VideoFile.ContentType ?? "video/mp4",
@@ -38,9 +41,7 @@ public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
     [ProducesResponseType(typeof(GetProcessedVideoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetProcessedVideo(
-        [FromRoute] int id,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> GetProcessedVideo([FromRoute] int id, CancellationToken cancellationToken)
     {
         var query = new GetProcessedVideoQuery(id);
         var result = await Mediator.Send(query, cancellationToken);
@@ -64,4 +65,3 @@ public class VideoController(IMediator mediator) : ApiControllerBase(mediator)
         return Ok(result);
     }
 }
-

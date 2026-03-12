@@ -9,10 +9,6 @@ public sealed class UploadVideoCommandHandler(IS3Service s3Service, ISqsService 
 {
     public async Task<UploadVideoResponse> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
     {
-        //var userExists = await userRepository.ExistsAsync(request.UserId, cancellationToken);
-        //if (!userExists)
-        //    throw new KeyNotFoundException($"User with id {request.UserId} not found. Create the user before uploading a video.");
-
         var prefix = Guid.NewGuid();
         var fileName = $"{prefix}{Path.GetExtension(request.FileName)}";
         var s3Key = $"videos/{prefix}/original/{fileName}";
